@@ -6,8 +6,25 @@ var fs      = require('fs');
 
 var app = express();
 
-var port= process.env.OPENSHIFT_NODEJS_PORT || 8080;
-var ipaddr= process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
+var port = normalizePort(process.env.PORT || '3000');
+app.set('port', port);
+
+
+function normalizePort(val) {
+    var port = parseInt(val, 10);
+
+    if (isNaN(port)) {
+        // named pipe
+        return val;
+    }
+
+    if (port >= 0) {
+        // port number
+        return port;
+    }
+
+    return false;
+}
 // Configure express with the settings found in
 // our config.js file
 
@@ -22,4 +39,4 @@ require('./routes')(app);
 // This file has been called directly with
 // `node index.js`. Start the server!
 
-app.listen(port, ipaddr);
+app.listen(port);

@@ -13,7 +13,7 @@ function getRound(length)
     var round = "1/64";
     if (length <= 32) round = "1/32";
     if (length <= 16) round = "1/16";
-    if (length<= 8)  round = "QuarterFinal";
+    if (length <= 8)  round = "QuarterFinal";
     if (length <= 4)  round = "SemiFinal";
     if (length <= 2)  round = "Final";
     return round;
@@ -22,6 +22,12 @@ function getRound(length)
 module.exports = function(app) {
 
     // homepage
+
+    app.get('/', function(req, res) {
+            res.redirect('/tournament');
+    });
+
+
     app.get('/tournament', function(req, res) {
 
         // find all photos
@@ -81,12 +87,28 @@ module.exports = function(app) {
 
     app.get('/new_game', function(req, res) {
 
-        users.update({ip: req.ip}, {$set: {battle: []}}, function()
-        {
-            res.redirect('/tournament');
+        var _get = url.parse(req.url, true).query;
+        //get winner photo name
+        var count = _get['count'];
+        console.log(count);
+
+        photos.find({type: "kitten"}, function(err, all_kittens) {
+            // find the current user
+            users.find({ip: req.ip}, function(err, u) {
+
+                var fightKittens = [];
+
+                    all_kittens.sort( function() { return 0.5 - Math.random() } );
+                    fightKittens = all_kittens.slice(0, count);
+
+
+                users.update({ip: req.ip}, {$set: {battle: fightKittens}});
+                res.redirect('/tournament');
+            });
         });
 
     });
+
 
     app.get('/winner', function(req, res) {
 

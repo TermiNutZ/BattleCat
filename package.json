@@ -1,0 +1,19 @@
+{
+  "name": "PupsandKittens",
+  "version": "1.0.0",
+  "description": "A voting game",
+  "main": "index.js",
+  "author": "Rajaselvan",
+  "license": "MIT",
+  "main": "server.js",
+  "dependencies": {
+    "connect": "latest",
+    "express": "^4.4.1",
+    "express3-handlebars": "^0.5.0",
+    "nedb": "^0.10.5",
+     "url": "^0.10.1",
+     "scripts": {
+	"start": "node server.js"
+     }
+   }
+}

@@ -1,0 +1,30 @@
+     
+            
+      <div class="container">
+         
+        
+        
+       <div class="span4 offset4">
+{{#if standings}}
+
+	<ul class="standings">
+
+		{{#each standings}}
+		
+		<li>
+			
+			<img src="photos/{{name}}" alt="Cat picture thumbnail" />
+			
+			
+			<p>{{this.ratings}}</p>
+		</li>
+
+		{{/each}}
+
+	</ul>
+
+{{/if}}
+
+</div>
+	</div>
+   

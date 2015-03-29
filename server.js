@@ -2,6 +2,8 @@
 //  OpenShift sample Node application
 var express = require('express');
 var fs      = require('fs');
+var bodyParser = require('body-parser');
+
 
 
 var app = express();
@@ -25,6 +27,11 @@ function normalizePort(val) {
 
     return false;
 }
+
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
+
 // Configure express with the settings found in
 // our config.js file
 

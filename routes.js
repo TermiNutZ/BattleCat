@@ -1,10 +1,10 @@
 
 var db = require('./database'),
-        photos = db.photos,
-        users = db.users;
+    photos = db.photos,
+    users = db.users;
 
-
-
+var path = require('path'),
+    fs = require('fs');
 var url = require("url");
 
 //get number of round
@@ -24,51 +24,51 @@ module.exports = function(app) {
     // homepage
 
     app.get('/', function(req, res) {
-            res.redirect('/tournament');
+        res.redirect('/tournament');
     });
 
 
     app.get('/tournament', function(req, res) {
 
         // find all photos
-            var tournamentSize = 8;
-            photos.find({type: "kitten"}, function(err, all_kittens) {
-                // find the current user
-                users.find({ip: req.ip}, function(err, u) {
+        var tournamentSize = 8;
+        photos.find({type: "kitten"}, function(err, all_kittens) {
+            // find the current user
+            users.find({ip: req.ip}, function(err, u) {
 
-                    var fightKittens = [];
+                var fightKittens = [];
 
-                    if (u.length == 1) {
-                        fightKittens = u[0].battle;
-                    }
+                if (u.length == 1) {
+                    fightKittens = u[0].battle;
+                }
 
-                    if (fightKittens.length == 0)
-                    {
-                        all_kittens.sort( function() { return 0.5 - Math.random() } );
-                        fightKittens = all_kittens.slice(0, tournamentSize);
-                    }
+                if (fightKittens.length == 0)
+                {
+                    all_kittens.sort( function() { return 0.5 - Math.random() } );
+                    fightKittens = all_kittens.slice(0, tournamentSize);
+                }
 
-                    if (fightKittens.length == 1)
-                    {
-                        return res.redirect('/winner?winner=' + fightKittens[0].name);
-                    }
+                if (fightKittens.length == 1)
+                {
+                    return res.redirect('/winner?winner=' + fightKittens[0].name);
+                }
 
-                    console.log(fightKittens.length);
+                console.log(fightKittens.length);
 
-                    //get round
-                    var round = getRound(fightKittens.length);
-                    // find which photos the user hasn't still voted on
+                //get round
+                var round = getRound(fightKittens.length);
+                // find which photos the user hasn't still voted on
 
-                    var leftKitten = fightKittens[0]; fightKittens.shift();
-                    var rightKitten = fightKittens[0]; fightKittens.shift();
+                var leftKitten = fightKittens[0]; fightKittens.shift();
+                var rightKitten = fightKittens[0]; fightKittens.shift();
 
 
-                    users.update({ip: req.ip}, {$set: {battle: fightKittens}});
+                users.update({ip: req.ip}, {$set: {battle: fightKittens}});
 
-			//send the two pics to the home page
-                    res.render('home', {photo1: leftKitten, photo2: rightKitten, header: round});
-                });
+                //send the two pics to the home page
+                res.render('home', {photo1: leftKitten, photo2: rightKitten, header: round});
             });
+        });
     });
 
 
@@ -98,8 +98,8 @@ module.exports = function(app) {
 
                 var fightKittens = [];
 
-                    all_kittens.sort( function() { return 0.5 - Math.random() } );
-                    fightKittens = all_kittens.slice(0, count);
+                all_kittens.sort( function() { return 0.5 - Math.random() } );
+                fightKittens = all_kittens.slice(0, count);
 
 
                 users.update({ip: req.ip}, {$set: {battle: fightKittens}});
@@ -118,7 +118,7 @@ module.exports = function(app) {
 
         photos.findOne({name: winner}, function(err, found1) {
             console.log(found1);
-            res.render('winner', {photo: found1.name, header: "Winner!"});
+            res.render('winner', {photo: found1.name, header: "Winner!", kittenName: found1.kittenName});
         });
     });
 
@@ -203,12 +203,43 @@ module.exports = function(app) {
             res.render('standings', {standings: all_photos});
 
         });
-
     });
+
+    app.get('/upload', function(req,res){
+        res.render('upload');
+    });
+
+
+
+    app.post('/upload', function (req, res) {
+            console.log('lol');
+            console.log(req.body);
+            var fstream;
+            req.pipe(req.busboy);
+            req.busboy.on('file', function (fieldname, file, filename) {
+                console.log("Uploading: " + filename);
+
+                //Path where image will be uploaded
+                fstream = fs.createWriteStream(__dirname + '/public/kittens/' + filename);
+                file.pipe(fstream);
+                fstream.on('close', function () {
+                    console.log("Upload Finished of " + filename);
+                });
+
+                fstream = fs.createWriteStream(__dirname + '/public/photos/' + filename);
+                file.pipe(fstream);
+                fstream.on('close', function () {
+                    console.log("Upload Finished of " + filename);
+
+                    photos.insert({
+                        name: filename,
+                        ratings: 1400,
+                        type: "kitten",
+                        kittenName: "Simon's Cat"
+                    });
+                    res.redirect('/standings#'+filename);
+                });
+            });
+
+        });
 };
-
-
-
-
-
-

@@ -11,12 +11,13 @@
 
 		{{#each standings}}
 		
-		<li>
+		<li style="width:400px">
 			
-			<img src="photos/{{name}}" alt="Cat picture thumbnail" />
-			
-			
-			<p>{{this.ratings}}</p>
+			<img src="photos/{{name}}" alt="Cat picture thumbnail" id="{{name}}" style="width:200px"/>
+
+            <p>{{this.kittenName}}<br/> <br/>{{this.ratings}} pts</p>
+
+
 		</li>
 
 		{{/each}}

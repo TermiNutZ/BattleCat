@@ -7,7 +7,7 @@
 var handlebars = require('express3-handlebars'),
 	express = require('express');
 var connect=require('connect');
-var bodyParser = require('body-parser');
+var busboy = require('connect-busboy'); //middleware for form/file upload
 
 // Require()-ing this module will return a function
 // that the index.js file will use to configure the
@@ -15,14 +15,19 @@ var bodyParser = require('body-parser');
 
 module.exports = function(app){
 
-	// Register and configure the handlebars templating engine
+
+
+
+    // Register and configure the handlebars templating engine
 	app.engine('html', handlebars({ 
 		defaultLayout: 'main',
 		extname: ".html",
 		layoutsDir: __dirname + '/views/layouts'
 	}));
 
-	// Set .html as the default template extension 
+
+
+	// Set .html as the default template extension
 	app.set('view engine', 'html');
 
 	app.set('views', __dirname + '/views');
@@ -30,11 +35,9 @@ module.exports = function(app){
 
 	// Make the files in the public folder available to the world
 	app.use(express.static(__dirname + '/public'));
+    app.use(busboy());
 
 	// Parse POST request data. It will be available in the req.body object
-	app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
-        extended: true
-    }));
-	
+
 
 };

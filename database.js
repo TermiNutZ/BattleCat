@@ -27,14 +27,34 @@ var kittens_on_disk = fs.readdirSync(__dirname + '/public/kittens');
 // constraint on the name field, subsequent writes will fail 
 // and you will still have only one record per image:
 
+
+function getName()
+{
+    var ind = Math.floor(Math.random()*8);
+    switch (ind)
+    {
+        case 1: return "Дарт Вейдер";
+        case 2: return "Скайуокер";
+        case 3: return "Йода";
+        case 4: return "Хан Соло";
+        case 5: return "R2D2";
+        case 6: return "Джа-Джа";
+        case 7: return "Дарт Мол";
+        case 0: return "Абдул";
+    }
+}
+
 kittens_on_disk.forEach(function(photo){
 	photos.insert({
 		name: photo,
 		ratings: 1400,
-		type: "kitten"
+		type: "kitten",
+        kittenName: getName()
 	});
 });
 
+//photos.remove({},  { multi: true });
+//users.remove({},  { multi: true });
 // Make the photos and users data sets available to the code
 // that uses require() on this module:
 
